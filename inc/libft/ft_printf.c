@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fgorlich <fgorlich@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nix <nix@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 15:43:13 by fgorlich          #+#    #+#             */
-/*   Updated: 2024/12/08 19:28:23 by fgorlich         ###   ########.fr       */
+/*   Updated: 2025/06/01 14:29:19 by nix              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static int	nbrs(unsigned long n, unsigned int base, const char *hex)
 static int	ft_putstr(char *s, int i)
 {
 	if (!s && (write (1, "(null)", 6)))
-		return (6); 
+		return (6);
 	while (s[i])
 		write (1, &s[i++], 1);
 	return (i);
