@@ -41,14 +41,14 @@ libft: $(LIBFT_A)
 $(LIBFT_A):
 	$(MAKE) -C $(LIBFT_DIR) all
 
-$(SERVER_EXE): $(SERVER_O) libft
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SERVER_O) $(LDLIBS) -o $@
+$(SERVER_EXE): $(SERVER_O) $(LIBFT_A)
+	$(CC) -g $(CFLAGS) $(LDFLAGS) $(SERVER_O) $(LDLIBS) -o $@
 
-$(CLIENT_EXE): $(CLIENT_O) libft
-	$(CC) $(CFLAGS) $(LDFLAGS) $(CLIENT_O) $(LDLIBS) -o $@
+$(CLIENT_EXE): $(CLIENT_O) $(LIBFT_A)
+	$(CC) -g $(CFLAGS) $(LDFLAGS) $(CLIENT_O) $(LDLIBS) -o $@
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	$(CC) -g $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 $(OBJ_DIR):
 	mkdir -p $@
 clean:
