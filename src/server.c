@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgorlich <fgorlich@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/15 03:16:45 by fgorlich          #+#    #+#             */
+/*   Updated: 2025/06/15 03:16:46 by fgorlich         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minitalk.h"
 
-volatile int	g_len = 0;
+static volatile int	g_len = 0;
 
 static void	ft_write_u(int fd, const unsigned char *str, size_t len)
 {

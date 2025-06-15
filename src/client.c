@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgorlich <fgorlich@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/15 03:16:48 by fgorlich          #+#    #+#             */
+/*   Updated: 2025/06/15 03:16:49 by fgorlich         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minitalk.h"
 
-volatile sig_atomic_t	g_ack_received = 1;
+static volatile sig_atomic_t	g_ack_received = 1;
 
 static void	ft_write(int fd, const char *str, size_t len)
 {
@@ -52,7 +64,7 @@ int	main(int argc, char **argv)
 	struct sigaction	sa_client;
 	int					server_pid;
 	char				*message;
-	int					i;
+	size_t				i;
 
 	if (argc != 3)
 		return (ft_printf("Usage: %s <Server_PID> <Message>\n", argv[0]), 1);
