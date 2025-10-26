@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fgorlich <fgorlich@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: fgroo <student@42.eu>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 03:16:45 by fgorlich          #+#    #+#             */
-/*   Updated: 2025/06/15 03:16:46 by fgorlich         ###   ########.fr       */
+/*   Updated: 2025/10/26 23:24:16 by fgroo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+#include <stddef.h>
 
-static volatile int	g_len = 0;
+static volatile size_t	g_len = 0;
 
 static void	ft_write_u(int fd, const unsigned char *str, size_t len)
 {
@@ -23,30 +24,19 @@ static void	ft_write_u(int fd, const unsigned char *str, size_t len)
 	}
 }
 
-void	insert_bits(int signum, int *max_len, unsigned char	**buffer_string)
+void	insert_bits(int signum, char	*buffer_string)
 {
 	static int				bit_index = 0;
-	static unsigned char	c = 0;
+	static char	c = 0;
 
 	if (signum == SIGINT)
 		exit(0);
-	if (!*max_len && signum == SIGUSR1 && ++bit_index)
-		return ;
-	if (!*max_len && signum == SIGUSR2)
-	{
-		*max_len = bit_index / 8;
-		bit_index = 0;
-		*buffer_string = malloc(*max_len);
-		if (!buffer_string)
-			exit(1);
-		return ;
-	}
 	if (signum == SIGUSR1)
 		c |= (1 << bit_index);
 	bit_index++;
 	if (bit_index == 8)
 	{
-		(*buffer_string)[g_len++] = c;
+		buffer_string[g_len++] = c;
 		bit_index = 0;
 		c = 0;
 	}
@@ -54,26 +44,31 @@ void	insert_bits(int signum, int *max_len, unsigned char	**buffer_string)
 
 void	server_handler(int signum, siginfo_t *info, void *context)
 {
-	static unsigned char	*buffer_string;
-	static int				max_len = 0;
+	static char		*buf;
+	static size_t	str_len;
 
 	(void)context;
-	insert_bits(signum, &max_len, &buffer_string);
-	kill(info->si_pid, SIGUSR2);
-	if (max_len && g_len > max_len)
+	if (!buf)
 	{
-		ft_write_u(2, (unsigned char *)"Error while transmitting", 24);
-		exit(1);
+		if (signum == SIGUSR1)
+			++str_len;
+		else if (signum == SIGUSR2)
+		{
+			buf = malloc(str_len + 1);
+			if (!buf)
+				exit(1);
+			buf[str_len] = 0;
+		}
+		kill(info->si_pid, SIGUSR2);
 	}
-	if (max_len && g_len == max_len)
+	if (buf && g_len == str_len)
 	{
-		ft_write_u(1, buffer_string, max_len);
-		ft_write_u(1, (unsigned char *)"\n", 1);
-		free(buffer_string);
-		g_len = 0;
-		max_len = 0;
-		return ;
+		ft_write_u(1, (const unsigned char *)buf, str_len);
+		(free(buf), buf = NULL, g_len = 0, str_len = 0);
+		kill(info->si_pid, SIGUSR1);
 	}
+	else if (buf && buf[str_len] && (insert_bits(signum, buf), 1))
+		kill(info->si_pid, SIGUSR2);
 }
 
 void	for_sigaction(struct sigaction *sa)
