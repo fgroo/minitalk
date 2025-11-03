@@ -6,14 +6,17 @@
 /*   By: fgroo <student@42.eu>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 03:16:45 by fgorlich          #+#    #+#             */
-/*   Updated: 2025/11/03 11:38:47 by fgroo            ###   ########.fr       */
+/*   Updated: 2025/11/03 17:08:11 by fgroo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+#include <signal.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <unistd.h>
 
-static volatile size_t	g_len = 0;
+static volatile sig_atomic_t	g_len = 0;
 
 static void	ft_write_u(int fd, const unsigned char *str, size_t len)
 {
@@ -45,7 +48,7 @@ void	insert_bits(int signum, char	*buffer_string)
 void	server_handler(int signum, siginfo_t *info, void *context)
 {
 	static char		*buf;
-	static size_t	str_len;
+	static int		str_len;
 
 	(void)context;
 	if (!buf)
@@ -53,21 +56,21 @@ void	server_handler(int signum, siginfo_t *info, void *context)
 		if (signum == SIGUSR1)
 			++str_len;
 		else if (signum == SIGUSR2)
-		{
+		{	
 			buf = malloc(str_len + 1);
 			if (!buf)
 				exit(1);
 			buf[str_len] = 0;
 		}
 	}
-	if (buf && g_len == str_len)
+	else if (buf && g_len >= str_len)
 	{
 		ft_write_u(1, (const unsigned char *)buf, str_len);
-		(free(buf), buf = NULL, g_len = 0, str_len = 0);
-		kill(info->si_pid, SIGUSR1);
+		(free(buf), buf = NULL, g_len = 0, str_len = 0, pause());
 	}
 	else if (buf)
 		insert_bits(signum, buf);
+	usleep(10);
 	kill(info->si_pid, SIGUSR2);
 }
 
