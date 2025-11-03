@@ -6,7 +6,7 @@
 /*   By: fgroo <student@42.eu>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 03:16:48 by fgorlich          #+#    #+#             */
-/*   Updated: 2025/10/26 22:51:20 by fgroo            ###   ########.fr       */
+/*   Updated: 2025/11/03 11:37:53 by fgroo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@ static void	ft_write(int fd, const char *str, size_t len)
 
 void	send_signal_and_wait(int pid, int signum)
 {
+	kill(pid, signum);
 	while (g_ack_received == 0)
 		usleep(50);
 	g_ack_received = 0;
-	kill(pid, signum);
 }
 
 static void	ack_handler(int signum)
@@ -78,8 +78,8 @@ int	main(int argc, char **argv)
 	sigemptyset(&sa_client.sa_mask);
 	if (sigaction(SIGUSR2, &sa_client, NULL) == -1)
 		return (ft_write(2, "CLIENT: Error setting up SIGUSR2", 32), 1);
-	i = ft_strlen(message);
-	while (i && i--)
+	i = ft_strlen(message) + 1;
+	while (--i)
 		send_signal_and_wait(server_pid, SIGUSR1);
 	send_signal_and_wait(server_pid, SIGUSR2);
 	while (message[i] && send_char(server_pid, message[i]))

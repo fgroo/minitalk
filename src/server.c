@@ -6,7 +6,7 @@
 /*   By: fgroo <student@42.eu>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 03:16:45 by fgorlich          #+#    #+#             */
-/*   Updated: 2025/10/26 23:24:16 by fgroo            ###   ########.fr       */
+/*   Updated: 2025/11/03 11:38:47 by fgroo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ void	server_handler(int signum, siginfo_t *info, void *context)
 				exit(1);
 			buf[str_len] = 0;
 		}
-		kill(info->si_pid, SIGUSR2);
 	}
 	if (buf && g_len == str_len)
 	{
@@ -67,8 +66,9 @@ void	server_handler(int signum, siginfo_t *info, void *context)
 		(free(buf), buf = NULL, g_len = 0, str_len = 0);
 		kill(info->si_pid, SIGUSR1);
 	}
-	else if (buf && buf[str_len] && (insert_bits(signum, buf), 1))
-		kill(info->si_pid, SIGUSR2);
+	else if (buf)
+		insert_bits(signum, buf);
+	kill(info->si_pid, SIGUSR2);
 }
 
 void	for_sigaction(struct sigaction *sa)
