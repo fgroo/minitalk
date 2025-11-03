@@ -6,7 +6,7 @@
 /*   By: fgroo <student@42.eu>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 03:16:48 by fgorlich          #+#    #+#             */
-/*   Updated: 2025/11/03 18:07:39 by fgroo            ###   ########.fr       */
+/*   Updated: 2025/11/03 18:31:48 by fgroo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	main(int argc, char **argv)
 	char				*message;
 	int					i;
 
-	if (argc != 3 && !argv[2][0])
+	if (argc != 3 || !argv[2][0])
 		return (ft_printf("Usage: %s <Server_PID> <Message>\n", argv[0]), 1);
 	server_pid = ft_atoi(argv[1]);
 	message = argv[2];
