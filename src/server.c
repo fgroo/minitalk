@@ -6,7 +6,7 @@
 /*   By: fgroo <student@42.eu>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 03:16:45 by fgorlich          #+#    #+#             */
-/*   Updated: 2025/11/03 17:08:11 by fgroo            ###   ########.fr       */
+/*   Updated: 2025/11/03 17:46:28 by fgroo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	ft_write_u(int fd, const unsigned char *str, size_t len)
 
 void	insert_bits(int signum, char	*buffer_string)
 {
-	static int				bit_index = 0;
+	static int	bit_index = 0;
 	static char	c = 0;
 
 	if (signum == SIGINT)
@@ -56,7 +56,7 @@ void	server_handler(int signum, siginfo_t *info, void *context)
 		if (signum == SIGUSR1)
 			++str_len;
 		else if (signum == SIGUSR2)
-		{	
+		{
 			buf = malloc(str_len + 1);
 			if (!buf)
 				exit(1);

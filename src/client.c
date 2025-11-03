@@ -6,7 +6,7 @@
 /*   By: fgroo <student@42.eu>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 03:16:48 by fgorlich          #+#    #+#             */
-/*   Updated: 2025/11/03 17:14:53 by fgroo            ###   ########.fr       */
+/*   Updated: 2025/11/03 18:07:39 by fgroo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	ft_write(int fd, const char *str, size_t len)
 
 void	send_signal_and_wait(int pid, int signum)
 {
-	int				elapsed;
+	int	elapsed;
 
 	elapsed = 0;
 	if (kill(pid, signum) == -1)
@@ -66,14 +66,15 @@ int	main(int argc, char **argv)
 	char				*message;
 	int					i;
 
-	if (argc != 3)
+	if (argc != 3 && !argv[2][0])
 		return (ft_printf("Usage: %s <Server_PID> <Message>\n", argv[0]), 1);
 	server_pid = ft_atoi(argv[1]);
 	message = argv[2];
 	if (server_pid <= 0)
-		return (ft_printf("Invalid PID.\n"), 1);
-	ft_printf("Client PID: %d\n", getpid());
+		return (ft_printf("Invalid PID.\\n"), 1);
+	ft_printf("Client PID: %d\\n", getpid());
 	sa_client.sa_handler = ack_handler;
+	sa_client.sa_flags = 0;
 	sigemptyset(&sa_client.sa_mask);
 	if (sigaction(SIGUSR2, &sa_client, NULL) == -1)
 		return (ft_write(2, "CLIENT: Error setting up SIGUSR2", 32), 1);
