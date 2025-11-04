@@ -77,10 +77,11 @@ sleep 1
 print_section "TEST 1: BASIC MESSAGE TRANSMISSION WITH VALIDATION"
 
 print_test "Simple ASCII message - VALIDATING SERVER OUTPUT"
+truncate -s 0 /tmp/server_validation.log  # Clear log before test
 OUTPUT=$(./client $SERVER_PID "Hello World" 2>&1)
 CLIENT_EXIT_CODE=$?
 sleep 0.5
-SERVER_LOG=$(cat /tmp/server_validation.log | tail -1)
+SERVER_LOG=$(cat /tmp/server_validation.log | tr -d '\0')
 log_detail "Client exit code: $CLIENT_EXIT_CODE"
 log_detail "Client output: $OUTPUT"
 log_detail "Server received: '$SERVER_LOG'"
@@ -91,10 +92,11 @@ else
 fi
 
 print_test "Single character - VALIDATING SERVER OUTPUT"
+truncate -s 0 /tmp/server_validation.log  # Clear log before test
 OUTPUT=$(./client $SERVER_PID "A" 2>&1)
 CLIENT_EXIT_CODE=$?
 sleep 0.5
-SERVER_LOG=$(cat /tmp/server_validation.log | tail -1)
+SERVER_LOG=$(cat /tmp/server_validation.log | tr -d '\0')
 log_detail "Client exit code: $CLIENT_EXIT_CODE"
 log_detail "Server received: '$SERVER_LOG'"
 if [[ "$SERVER_LOG" == "A" ]] && [[ $CLIENT_EXIT_CODE -eq 0 ]]; then
@@ -104,10 +106,11 @@ else
 fi
 
 print_test "Numbers only - VALIDATING SERVER OUTPUT"
+truncate -s 0 /tmp/server_validation.log  # Clear log before test
 OUTPUT=$(./client $SERVER_PID "1234567890" 2>&1)
 CLIENT_EXIT_CODE=$?
 sleep 0.5
-SERVER_LOG=$(cat /tmp/server_validation.log | tail -1)
+SERVER_LOG=$(cat /tmp/server_validation.log | tr -d '\0')
 log_detail "Client exit code: $CLIENT_EXIT_CODE"
 log_detail "Server received: '$SERVER_LOG'"
 if [[ "$SERVER_LOG" == "1234567890" ]] && [[ $CLIENT_EXIT_CODE -eq 0 ]]; then
@@ -122,10 +125,11 @@ fi
 print_section "TEST 2: UNICODE SUPPORT WITH VALIDATION"
 
 print_test "Emojis 😀🎉 - VALIDATING SERVER OUTPUT"
+truncate -s 0 /tmp/server_validation.log  # Clear log before test
 OUTPUT=$(./client $SERVER_PID "😀🎉" 2>&1)
 CLIENT_EXIT_CODE=$?
 sleep 0.5
-SERVER_LOG=$(cat /tmp/server_validation.log | tail -1)
+SERVER_LOG=$(cat /tmp/server_validation.log | tr -d '\0')
 log_detail "Client exit code: $CLIENT_EXIT_CODE"
 log_detail "Server received: '$SERVER_LOG'"
 if [[ "$SERVER_LOG" == "😀🎉" ]] && [[ $CLIENT_EXIT_CODE -eq 0 ]]; then
@@ -135,10 +139,11 @@ else
 fi
 
 print_test "Mixed text and Unicode - VALIDATING SERVER OUTPUT"
+truncate -s 0 /tmp/server_validation.log  # Clear log before test
 OUTPUT=$(./client $SERVER_PID "Hello 🚀 World" 2>&1)
 CLIENT_EXIT_CODE=$?
 sleep 0.5
-SERVER_LOG=$(cat /tmp/server_validation.log | tail -1)
+SERVER_LOG=$(cat /tmp/server_validation.log | tr -d '\0')
 log_detail "Client exit code: $CLIENT_EXIT_CODE"
 log_detail "Server received: '$SERVER_LOG'"
 if [[ "$SERVER_LOG" == "Hello 🚀 World" ]] && [[ $CLIENT_EXIT_CODE -eq 0 ]]; then
@@ -228,8 +233,9 @@ VALGRIND_OUTPUT=$(cat /tmp/valgrind_output.log)
 log_detail "Valgrind exit code: $VALGRIND_EXIT_CODE"
 echo "$VALGRIND_OUTPUT" >> $LOG_FILE
 
-# Check for actual memory leaks
-if echo "$VALGRIND_OUTPUT" | grep -q "definitely lost: 0 bytes" && echo "$VALGRIND_OUTPUT" | grep -q "indirectly lost: 0 bytes"; then
+# Check for actual memory leaks - handle both possible outputs
+if echo "$VALGRIND_OUTPUT" | grep -q "All heap blocks were freed -- no leaks are possible" || \
+   (echo "$VALGRIND_OUTPUT" | grep -q "definitely lost: 0 bytes" && echo "$VALGRIND_OUTPUT" | grep -q "indirectly lost: 0 bytes"); then
     pass_test "Valgrind - no memory leaks detected"
 else
     fail_test "Valgrind - memory leaks detected" "Check valgrind output in log file"
@@ -248,10 +254,11 @@ else
 fi
 
 print_test "Server responsive after multiple messages"
+truncate -s 0 /tmp/server_validation.log  # Clear log before test
 OUTPUT=$(./client $SERVER_PID "final_test" 2>&1)
 CLIENT_EXIT_CODE=$?
 sleep 0.5
-SERVER_LOG=$(cat /tmp/server_validation.log | tail -1)
+SERVER_LOG=$(cat /tmp/server_validation.log | tr -d '\0')
 if [[ $CLIENT_EXIT_CODE -eq 0 ]] && [[ "$SERVER_LOG" == "final_test" ]]; then
     pass_test "Server responsive with validation"
 else

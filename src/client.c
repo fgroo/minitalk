@@ -6,7 +6,7 @@
 /*   By: fgroo <student@42.eu>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 03:16:48 by fgorlich          #+#    #+#             */
-/*   Updated: 2025/11/04 13:33:00 by fgroo            ###   ########.fr       */
+/*   Updated: 2025/11/04 13:51:15 by fgroo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	send_signal_and_wait(int pid, int signum)
 	if (kill(pid, signum) == -1)
 		exit(0);
 	while (g_ack_received == 0 && ++elapsed < 50000)
-		usleep(10);
+		usleep(1);
 	if (elapsed >= 50000)
 		exit(1);
 }
