@@ -6,7 +6,7 @@
 /*   By: fgroo <student@42.eu>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 03:16:48 by fgorlich          #+#    #+#             */
-/*   Updated: 2025/11/03 18:31:48 by fgroo            ###   ########.fr       */
+/*   Updated: 2025/11/04 13:33:00 by fgroo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@ void	send_signal_and_wait(int pid, int signum)
 	int	elapsed;
 
 	elapsed = 0;
+	g_ack_received = 0;
 	if (kill(pid, signum) == -1)
 		exit(0);
-	g_ack_received = 0;
 	while (g_ack_received == 0 && ++elapsed < 50000)
-		usleep(100);
+		usleep(10);
 	if (elapsed >= 50000)
 		exit(1);
 }
@@ -72,7 +72,7 @@ int	main(int argc, char **argv)
 	message = argv[2];
 	if (server_pid <= 0)
 		return (ft_printf("Invalid PID.\\n"), 1);
-	ft_printf("Client PID: %d\\n", getpid());
+	ft_printf("Client PID: %d\n", getpid());
 	sa_client.sa_handler = ack_handler;
 	sa_client.sa_flags = 0;
 	sigemptyset(&sa_client.sa_mask);
